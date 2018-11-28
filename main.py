@@ -1,10 +1,18 @@
 import urllib.request
+from random import shuffle
 
 debug = True
 has_dataset = True
 website_hosting_dataset = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
 dataset_file = "dataset.txt"
 dataset = []
+
+
+def print_contents_of(array):
+    for data in array:
+        data.to_string()   
+    print()
+
 
 
 # The following both retrieves the UTF-8 encoded data and
@@ -45,7 +53,7 @@ class Flower:
         self.petal_width = petal_width
         self.flower_class = flower_class
 
-    def to_String(self):
+    def to_string(self):
         print("sepal_length: {}, sepal_width: {}, petal_length: {}, petal_width: {}, flower_class: {}".format(self.sepal_length, self.sepal_width, self.petal_length, self.petal_width, self.flower_class))
 
 
@@ -74,27 +82,48 @@ def retrieve_data_from(dataset_file):
         petal_width = data_info[3]
         flower_class = data_info[4]
 
-
         flowers_dataset.append(Flower(sepal_length, sepal_width, petal_length, petal_width, flower_class))
+
+
+def draw_samples_for_training(percentage_to_train):
+    if percentage_to_train > 0 and percentage_to_train <= len(flowers_dataset):
+        for i in range(0, int(percentage_to_train * len(flowers_dataset))):
+            training_set.append(flowers_dataset[i])
 
 
 flowers_dataset = []
 retrieve_data_from(dataset_file)
 
+
 if debug:
-    for flower in flowers_dataset:
-        flower.to_String()
+    print("Unshuffled flowers dataset:")
+    print_contents_of(flowers_dataset)
+
+shuffle(flowers_dataset)
+if debug:
+    print("Shuffled flowers dataset:")
+    print_contents_of(flowers_dataset)
 
 
+training_set = []
 
+draw_samples_for_training(2/3)
 
+if debug:
+    print("Training set:")
+    print_contents_of(training_set)
 
-
-
-
-
-
-
+if debug:
+    print("Size of flowers_dataset: {}".format(len(flowers_dataset)))
+    print("Size of training_set: {}".format(len(training_set)))
 
 
 # perfom naive bayes training
+
+
+
+
+
+
+
+
