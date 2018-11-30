@@ -1,5 +1,7 @@
 import urllib.request
 from random import shuffle
+import math
+
 
 debug = True
 has_dataset = True
@@ -87,17 +89,17 @@ def retrieve_data_from(dataset_file):
 
 def draw_samples_for_training():
     for setosa in range(0, 50):
-        if setosa == 25:
+        if setosa == 50:
             break
         training_set.append(flowers_dataset[setosa])
 
     for versicolor in range(50, 100):
-        if versicolor == 75:
+        if versicolor == 100:
             break
         training_set.append(flowers_dataset[versicolor])
 
     for virginica in range(100, len(flowers_dataset)):
-        if virginica == 125:
+        if virginica == 150:
             break
         training_set.append(flowers_dataset[virginica])
 
@@ -135,6 +137,62 @@ if debug:
 
 # perfom naive bayes training
 
+
+# this is used to check if my calculations are correct
+# get mean and total of all samples
+def mean():
+    sepal_length_sigma = 0
+    sepal_width_sigma = 0
+    petal_length_sigma = 0
+    petal_width_sigma = 0
+    
+    for flower in flowers_dataset:
+        sepal_length_sigma += flower.sepal_length
+        sepal_width_sigma += flower.sepal_width
+        petal_length_sigma += flower.petal_length
+        petal_width_sigma += flower.petal_width
+
+    
+    sepal_length_mean = sepal_length_sigma / 150
+    sepal_width_mean = sepal_width_sigma / 150
+    petal_length_mean = petal_length_sigma / 150
+    petal_width_mean = petal_width_sigma / 150
+
+    print("sepal lenth: {}, sepal width: {}, petal length: {}, petal width: {}".format(sepal_length_mean, sepal_width_mean, petal_length_mean, petal_width_mean))
+
+    std(sepal_length_mean, sepal_width_mean, petal_length_mean, petal_width_mean)
+
+
+def std(sepal_length_mean, sepal_width_mean, petal_length_mean, petal_width_mean):
+    
+    sepal_length_dif_mean_s = 0
+    sepal_width_dif_mean_s = 0
+    petal_length_dif_mean_s = 0
+    petal_width_dif_mean_s = 0
+    
+    for flower in flowers_dataset:
+        sepal_length_dif_mean_s += math.pow(flower.sepal_length - sepal_length_mean, 2)
+        sepal_width_dif_mean_s +=  math.pow(flower.sepal_width - sepal_width_mean, 2)
+        petal_length_dif_mean_s += math.pow(flower.petal_length - petal_length_mean, 2)
+        petal_width_dif_mean_s +=  math.pow(flower.petal_width - petal_width_mean, 2)
+
+
+
+    sepal_length_sample_variance = sepal_length_dif_mean_s / (150 - 1) 
+    sepal_width_sample_variance =  sepal_width_dif_mean_s  / (150 - 1)   
+    petal_length_sample_variance = petal_length_dif_mean_s / (150 - 1)
+    petal_width_sample_variance =  petal_width_dif_mean_s  / (150 - 1)
+
+
+    sepal_length_std = math.sqrt(sepal_length_sample_variance)
+    sepal_width_std = math.sqrt(sepal_width_sample_variance)
+    petal_length_std =math.sqrt(petal_length_sample_variance)
+    petal_width_std = math.sqrt(petal_width_sample_variance)
+    print("STD:")
+    print("sepal lenth: {}, sepal width: {}, petal length: {}, petal width: {}".format(sepal_length_sample_variance, sepal_width_sample_variance, petal_length_sample_variance, petal_width_sample_variance))
+
+
+
 # get the mean of the flower's features
 def sepal_length_mean(flower_class, start, end):
     sigma = 0
@@ -168,6 +226,63 @@ def petal_width_mean(flower_class, start, end):
     mean = sigma / (end - start)
     flower_class['mean'].append(mean)
 
+# get the standard deviation of the flower's features
+
+def sepal_length_std(sepal_length_mean, start, end):
+    
+    #(xi - mean)
+    checker = 0
+    temp = 0
+    for flower in range(start, end):
+        temp = (training_set[flower].sepal_length - sepal_length_mean)
+        checker = temp + checker
+    #    print("sepal_length: {} - sepal_length_mean: {} = {}".format(training_set[flower].sepal_length, sepal_length_mean, temp))
+        
+    print("checker ", checker)
+
+
+def sepal_width_std(sepal_width_mean, start, end):
+    
+    #(xi - mean)
+    checker = 0
+    temp = 0
+    sigma_square_dif_mean = 0
+    for flower in range(start, end):
+        temp = (training_set[flower].sepal_width - sepal_width_mean)
+        sigma_square_dif_mean = sigma_square_dif_mean + math.pow(temp, 2)
+        checker = temp + checker
+    #    print("sepal_length: {} - sepal_length_mean: {} = {}".format(training_set[flower].sepal_length, sepal_length_mean, temp))
+        
+    sample_variance = sigma_square_dif_mean / ((end - start) - 1)
+    sample_standard_deviation = math.sqrt(sample_variance)
+    print("standard_deviation: ", sample_standard_deviation)
+    #print("checker ", checker)
+
+
+def petal_length_std(petal_length_mean, start, end):
+    
+    #(xi - mean)
+    checker = 0
+    temp = 0
+    for flower in range(start, end):
+        temp = (training_set[flower].petal_length - petal_length_mean)
+        checker = temp + checker
+    #    print("sepal_length: {} - sepal_length_mean: {} = {}".format(training_set[flower].sepal_length, sepal_length_mean, temp))
+        
+    print("checker ", checker)
+
+
+def petal_width_std(petal_width_mean, start, end):
+    
+    #(xi - mean)
+    checker = 0
+    temp = 0
+    for flower in range(start, end):
+        temp = (training_set[flower].petal_width - petal_width_mean)
+        checker = temp + checker
+    #    print("sepal_length: {} - sepal_length_mean: {} = {}".format(training_set[flower].sepal_length, sepal_length_mean, temp))
+        
+    print("checker ", checker)
 
 
 setosa = {
@@ -185,23 +300,39 @@ virginica = {
     'std' : [],
 }
 
+mean()
 
-sepal_length_mean(setosa, 0, 25)
-sepal_width_mean(setosa,  0, 25)
-petal_length_mean(setosa, 0, 25)
-petal_width_mean(setosa,  0, 25)
+sepal_length_mean(setosa, 0, 50)
+sepal_width_mean(setosa,  0, 50)
+petal_length_mean(setosa, 0, 50)
+petal_width_mean(setosa,  0, 50)
 
-sepal_length_mean(versicolor,25, 50)
-sepal_width_mean(versicolor, 25, 50)
-petal_length_mean(versicolor,25, 50)
-petal_width_mean(versicolor, 25, 50)
+sepal_length_mean(versicolor,50, 100)
+sepal_width_mean(versicolor, 50, 100)
+petal_length_mean(versicolor,50, 100)
+petal_width_mean(versicolor, 50, 100)
 
-sepal_length_mean(virginica, 50, 75)
-sepal_width_mean(virginica,  50, 75)
-petal_length_mean(virginica, 50, 75)
-petal_width_mean(virginica,  50, 75)
+sepal_length_mean(virginica, 100, 150)
+sepal_width_mean(virginica,  100, 150)
+petal_length_mean(virginica, 100, 150)
+petal_width_mean(virginica,  100, 150)
 
 
 print("setosa: \t{}".format(setosa['mean']))
 print("versicolor: \t{}".format(versicolor['mean']))
 print("virginica: \t{}".format(virginica['mean']))
+
+sepal_length_std((setosa['mean'])[0], 0, 50)
+sepal_width_std(( setosa['mean'])[1], 0, 50)
+petal_length_std((setosa['mean'])[2], 0, 50)
+petal_width_std(( setosa['mean'])[3], 0, 50)
+
+sepal_length_std((versicolor['mean'])[0], 50, 100)
+sepal_width_std(( versicolor['mean'])[1], 50, 100)
+petal_length_std((versicolor['mean'])[2], 50, 100)
+petal_width_std(( versicolor['mean'])[3], 50, 100)
+
+sepal_length_std((virginica['mean'])[0], 100, 150)
+sepal_width_std(( virginica['mean'])[1], 100, 150)
+petal_length_std((virginica['mean'])[2], 100, 150)
+petal_width_std(( virginica['mean'])[3], 100, 150)
