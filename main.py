@@ -45,15 +45,28 @@ if (not has_dataset):
 # Iris object to store the values
 class Iris:
     def __init__(self, sepal_length, sepal_width, petal_length, petal_width, iris_class):
-        self.sepal_length = float(sepal_length)
-        self.sepal_width = float(sepal_width)
-        self.petal_length = float(petal_length)
-        self.petal_width = float(petal_width)
-        self.iris_class = iris_class
+
+        self.features = {
+            'sepal_length' : float(sepal_length),
+            'sepal_width' : float(sepal_width),
+            'petal_length' : float(petal_length),
+            'petal_width' : float(petal_width),
+            'iris_class' : iris_class
+        }
+        #self.sepal_length = float(sepal_length)
+        #self.sepal_width = float(sepal_width)
+        #self.petal_length = float(petal_length)
+        #self.petal_width = float(petal_width)
+        #self.iris_class = iris_class
 
     def to_string(self):
         print("sepal_length: {}, sepal_width: {}, petal_length: {}, petal_width: {}, iris_class: {}"
-            .format(self.sepal_length, self.sepal_width, self.petal_length, self.petal_width, self.iris_class))
+            .format(self.features['sepal_length'],
+                    self.features['sepal_width'],
+                    self.features['petal_length'],
+                    self.features['petal_width'],
+                    self.features['iris_class']))
+
 
 
 # parse the data
@@ -102,13 +115,21 @@ isolated_petal_width = []
 
 def isolate_features():
     for iris in iris_dataset:
-        isolated_sepal_length.append(iris.sepal_length)   
-        isolated_sepal_width.append(iris.sepal_width)
-        isolated_petal_length.append(iris.petal_length)
-        isolated_petal_width.append(iris.petal_width)
+        isolated_sepal_length.append(iris.features['sepal_length'])   
+        isolated_sepal_width.append(iris.features['sepal_width'])
+        isolated_petal_length.append(iris.features['petal_length'])
+        isolated_petal_width.append(iris.features['petal_width'])
+
+def isolated_feature(feature, start, end):
+    isolated_features_list = []
+    for i in range(start, end):
+        isolated_features_list.append(training_set[i].features[feature])
+    return isolated_features_list
+
 
 def sort_iris():
-    pass
+    for i in range(0, 25):
+        pass       
 
 
 
@@ -168,10 +189,69 @@ virginica = {
 # make the predictions using Gaussian Naive Bayes Model
 
 def pdf(x, mean, std):
-    return (1 / (math.sqrt(2 * math.pi) * std)) * math.exp(-((x - math.pow(mean, 2)) / (2 * math.pow(std, 2))))
+    return (1 / (math.sqrt(2 * math.pi * math.pow(std, 2)))) * math.exp(-((math.pow(x - mean, 2)) / (2 * math.pow(std, 2))))
+
+
+
+setosa_sepal_length = isolated_feature('sepal_length', 0, 25)
+setosa_sepal_width = isolated_feature('sepal_width', 0, 25)
+setosa_petal_length = isolated_feature('petal_length', 0, 25)
+setosa_petal_width = isolated_feature('petal_width', 0, 25)
+
+versicolor_sepal_length = isolated_feature('sepal_length', 25, 50)
+versicolor_sepal_width = isolated_feature('sepal_width', 25, 50)
+versicolor_petal_length = isolated_feature('petal_length', 25, 50)
+versicolor_petal_width = isolated_feature('petal_width', 25, 50)
+
+
+virginica_sepal_length = isolated_feature('sepal_length', 50, 75)
+virginica_sepal_width = isolated_feature('sepal_width', 50, 75)
+virginica_petal_length = isolated_feature('petal_length', 50, 75)
+virginica_petal_width = isolated_feature('petal_width', 50, 75)
 
 
 
 
+setosa['mean'] = [get_mean_of(setosa_sepal_length), get_mean_of(setosa_sepal_width), get_mean_of(setosa_petal_length), get_mean_of(setosa_petal_width)]
+setosa['std'] = [get_std_of(setosa_sepal_length), get_std_of(setosa_sepal_width), get_std_of(setosa_petal_length), get_std_of(setosa_petal_width)]
 
 
+
+versicolor['mean'] = [get_mean_of(versicolor_sepal_length), get_mean_of(versicolor_sepal_width), get_mean_of(versicolor_petal_length), get_mean_of(versicolor_petal_width)]
+
+versicolor['std'] = [get_std_of(versicolor_sepal_length), get_std_of(versicolor_sepal_width), get_std_of(versicolor_petal_length), get_std_of(versicolor_petal_width)]
+
+
+
+virginica['mean'] = [get_mean_of(virginica_sepal_length), get_mean_of(virginica_sepal_width), get_mean_of(virginica_petal_length), get_mean_of(virginica_petal_width)]
+
+virginica['std'] = [get_std_of(virginica_sepal_length), get_std_of(virginica_sepal_width), get_std_of(virginica_petal_length), get_std_of(virginica_petal_width)]
+
+
+print(setosa['mean'])
+print(setosa['std'])
+
+
+print(versicolor['mean'])
+print(versicolor['std'])
+
+
+print(virginica['mean'])
+print(virginica['std'])
+
+
+test = [5.7, 2.8, 4.1, 1.3]
+
+
+
+setosa_prediction = pdf(test[0], setosa['mean'][0], setosa['std'][0]) * pdf(test[1], setosa['mean'][1], setosa['std'][1]) * pdf(test[2], setosa['mean'][2], setosa['std'][2]) * pdf(test[3], setosa['mean'][3], setosa['std'][3]) 
+
+versicolor_prediction = pdf(test[0], versicolor['mean'][0], versicolor['std'][0]) * pdf(test[1], versicolor['mean'][1], versicolor['std'][1]) * pdf(test[2], versicolor['mean'][2], versicolor['std'][2]) * pdf(test[3], versicolor['mean'][3], versicolor['std'][3]) 
+
+virginica_prediction = pdf(test[0], virginica['mean'][0], virginica['std'][0]) * pdf(test[1], virginica['mean'][1], virginica['std'][1]) * pdf(test[2], virginica['mean'][2], virginica['std'][2]) * pdf(test[3], virginica['mean'][3], virginica['std'][3]) 
+
+
+
+print("setosa: {}".format(setosa_prediction))
+print("versicolor: {}".format(versicolor_prediction))
+print("virginica: {}".format(virginica_prediction))
