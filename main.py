@@ -16,7 +16,7 @@ training_set = []
 test = [5.7, 2.8, 4.1, 1.3]
 
 
-def print_contents_of(array):
+def print_objects_of(array):
     for element in array:
         element.to_string()
     print()
