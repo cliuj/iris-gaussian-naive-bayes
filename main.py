@@ -4,7 +4,7 @@ from random import shuffle
 import math
 
 
-# global variables used to for configuration
+# global variables used for configuration
 debug = False
 has_dataset = True
 website_hosting_dataset = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
@@ -15,7 +15,7 @@ training_set = []
 test_set = []
 
 
-def print_objects_of(array):
+def print_iris_in(array):
     for element in array:
         element.to_string()
     print()
@@ -235,10 +235,10 @@ def run_gnb(class_samples_num, test_set):
     
     if debug:
         print("Iris dataset size: ", len(iris_dataset))
-        print_objects_of(iris_dataset)
+        print_iris_in(iris_dataset)
     
         print("Training set size: ", len(training_set))
-        print_objects_of(training_set)
+        print_iris_in(training_set)
 
         print("Test set size: ", len(test_set))
         print(test_set)
